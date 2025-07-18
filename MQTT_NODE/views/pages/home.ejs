@@ -1,0 +1,245 @@
+
+ <% const products = [
+    { 
+      name: 'Vinamilk milk', 
+      price: '25.000đ', 
+      image: 'https://salt.tikicdn.com/cache/w1200/ts/product/1f/22/00/3808995c7c86670ec4c06ad5e02f605e.jpg',
+      code: 'PRO001'
+    },
+    { 
+      name: 'Hao Noodle', 
+      price: '5.000đ', 
+      image: 'https://www.mihaohao.vn/wp-content/uploads/2024/05/Final.jpg',
+      code: 'PRO002'
+    },
+    { 
+      name: 'Neptune Oil', 
+      price: '45.000đ', 
+      image: 'https://product.hstatic.net/200000356473/product/cocacola-chai-390ml_7214ffae946e4e63826e8f38a45ed5fa_1024x1024.jpg',
+      code: 'PRO003'
+    },
+    { 
+      name: 'Cocacola', 
+      price: '12.000đ', 
+      image: 'https://product.hstatic.net/200000356473/product/cocacola-chai-390ml_7214ffae946e4e63826e8f38a45ed5fa_1024x1024.jpg',
+      code: 'PRO004'
+    },
+    { 
+      name: 'Sandwich', 
+      price: '15.000đ', 
+      image: 'https://banhmistaff.com.vn/uploads/images/products/big/17146655_sandwich.png',
+      code: 'PRO005'
+    }
+  ]; %>
+<section>
+    <div class="product-list">
+  <% products.forEach(product => { %>
+    <div class="product-item">
+      <div class="product-image">
+        <img src="<%= product.image %>" alt="<%= product.name %>">
+      </div>
+      <div class="product-info">
+        <h3 class="product-name"><%= product.name %></h3>
+        <p class="product-code">Code: <%= product.code %></p>
+        <p class="product-price"><%= product.price %></p>
+        <button class="btn btn-primary update-price-btn" 
+                data-bs-toggle="modal" 
+                data-bs-target="#priceModal"
+                data-product-id="<%= product.code %>"
+                data-product-name="<%= product.name %>"
+                data-current-price="<%= product.price.replace('đ', '').trim() %>">
+          Update Price
+        </button>
+      </div>
+    </div>
+  <% }); %>
+   </div>
+</section>
+<!-- Price Update Modal -->
+<div class="modal fade" id="priceModal" tabindex="-1" aria-labelledby="priceModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="priceModalLabel">Update Product Price</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="priceUpdateForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Product Name</label>
+            <input type="text" class="form-control" id="name" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="productId" class="form-label">Product Code</label>
+            <input type="text" class="form-control" id="productId" readonly>
+          </div>
+          <div class="mb-3">
+            <label for="price" class="form-label">New Price (đ)</label>
+            <input type="number" class="form-control" id="price" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="savePriceBtn">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    section{
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 5%;
+    font-family: Arial, sans-serif;
+    }
+  .product-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 50px;
+  }
+  
+  .product-item {
+    width: 25%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .product-image {
+    width: 120px;
+    height: 120px;
+    margin-right: 20px;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+  
+  .product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .product-info {
+    flex: 1;
+  }
+  
+  .product-name {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 18px;
+  }
+  
+  .product-code {
+    margin: 0 0 5px 0;
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .product-price {
+    margin: 0;
+    color: #e53935;
+    font-size: 20px;
+    font-weight: bold;
+  }
+   .update-price-btn {
+        padding: 8px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.3s;
+        margin-top: 5px;
+        align-self: flex-start;
+    }
+    
+    .update-price-btn:hover {
+        background-color: #45a049;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  // Handle modal show event
+  document.addEventListener('DOMContentLoaded', function() {
+    const priceModal = document.getElementById('priceModal');
+    const savePriceBtn = document.getElementById('savePriceBtn');
+    
+    priceModal.addEventListener('show.bs.modal', function(event) {
+      const button = event.relatedTarget;
+      const productId = button.getAttribute('data-product-id');
+      const name = button.getAttribute('data-product-name');
+      const currentPrice = button.getAttribute('data-current-price');
+      
+      // Set modal values
+      document.getElementById('name').value = name;
+      document.getElementById('productId').value = productId;
+      document.getElementById('price').value = currentPrice;
+    });
+    
+     // Handle save button click
+    savePriceBtn.addEventListener('click', async function() {
+        const price = document.getElementById('price').value;
+        const productId = document.getElementById('productId').value;
+        const name = document.getElementById('name').value;
+
+        if (!price) {
+        alert('Please enter a valid price');
+        return;
+        }
+
+        // Confirmation dialog
+        const isConfirmed = confirm(`Are you sure you want to update ${name} (${productId}) to ${price}đ?`);
+        
+        if (!isConfirmed) return;
+
+        try {
+        // Show loading state
+        savePriceBtn.disabled = true;
+        savePriceBtn.textContent = 'Updating...';
+
+        // Make API call with Axios
+        const response = await axios.post('http://localhost:3000/api/product', {
+            productId: productId,
+            name:name,
+            price: price
+        });
+
+        // Success handling
+        if (response.data.success) {
+            // Update the price display
+            document.querySelector(`[data-product-id="${productId}"]`)
+            .closest('.product-item')
+            .querySelector('.product-price').textContent = `${price}đ`;
+            
+            // Update the button's data attribute for future edits
+            document.querySelector(`[data-product-id="${productId}"]`)
+            .setAttribute('data-current-price', price);
+        } else {
+            throw new Error(response.data.message || 'Update failed');
+        }
+        } catch (error) {
+        console.error('Error updating price:', error);
+        alert(`Error updating price: ${error.message}`);
+        } finally {
+        // Close the modal
+        const modal = bootstrap.Modal.getInstance(priceModal);
+        modal.hide();
+        
+        // Reset button state
+        savePriceBtn.disabled = false;
+        savePriceBtn.textContent = 'Save changes';
+        }
+    });
+  });
+</script>
